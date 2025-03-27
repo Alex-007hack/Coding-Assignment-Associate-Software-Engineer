@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Slider</title>
+    <style>
+        .slider-container {
+            max-width: 1000px;
+            height: 600px;
+            margin: 2rem auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .slider {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .slider-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            position: absolute;
+        }
+
+        .slider-image.active {
+            opacity: 1;
+        }
+
+        .slider-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 1rem;
+        }
+
+        .slider-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .slider-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        .slider-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+        }
+
+        .slider-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <div class="slider">
+            <!-- Images will be injected by JavaScript -->
+        </div>
+        <div class="slider-controls">
+            <button class="slider-btn" id="prevBtn" aria-label="Previous image">
+                <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+            </button>
+            <button class="slider-btn" id="nextBtn" aria-label="Next image">
+                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        class ImageSlider {
+            constructor(container, images) {
+                this.container = container;
+                this.images = images;
+                this.currentIndex = 0;
+                this.slider = container.querySelector('.slider');
+                this.prevBtn = container.querySelector('#prevBtn');
+                this.nextBtn = container.querySelector('#nextBtn');
+                
+                this.init();
+                this.addEventListeners();
+            }
+
+            init() {
+                // Create image elements
+                this.images.forEach((src, index) => {
+                    const img = document.createElement('img');
+                    img.className = `slider-image ${index === 0 ? 'active' : ''}`;
+                    img.src = src;
+                    img.alt = `Slide ${index + 1}`;
+                    img.loading = 'lazy';
+                    this.slider.appendChild(img);
+                });
+            }
+
+            addEventListeners() {
+                this.prevBtn.addEventListener('click', () => this.showPrevious());
+                this.nextBtn.addEventListener('click', () => this.showNext());
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.showPrevious();
+                    if (e.key === 'ArrowRight') this.showNext();
+                });
+            }
+
+            showNext() {
+                this.currentIndex = (this.currentIndex + 1) % this.images.length;
+                this.updateSlider();
+            }
+
+            showPrevious() {
+                this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+                this.updateSlider();
+            }
+
+            updateSlider() {
+                const images = this.slider.querySelectorAll('.slider-image');
+                images.forEach((img, index) => {
+                    img.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+        }
+
+        // Initialize slider with your images
+      const images = [
+    'https://t4.ftcdn.net/jpg/06/29/35/69/360_F_629356922_KB0F6hwZpSItiNyolBXflKZbX8bXkh.jpg',
+    'https://t4.ftcdn.net/jpg/05/65/33/23/360_F_565332352_7lZPZxDkaBCyzIp63eJZf4mwO7Z8bXkh.jpg',
+    'https://t4.ftcdn.net/jpg/04/44/82/11/360_F_444821185_5X5h14QHIp5Rg2zEM9CUGM0lZQwG26eC.jpg',
+    'https://t4.ftcdn.net/jpg/06/64/12/39/360_F_664123934_twJv3P8NtBe4Pj9E9v5GZcQRP6xPHo2b.jpg'
+];
+
+        const sliderContainer = document.querySelector('.slider-container');
+        new ImageSlider(sliderContainer, images);
+    </script>
+</body>
+</html>

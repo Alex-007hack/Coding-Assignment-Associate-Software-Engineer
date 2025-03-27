@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Todo List</title>
+    <style>
+        /* Modern CSS with variables and responsive design */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --danger: #e74c3c;
+            --background: #ecf0f1;
+            --text: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        .todo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .todo-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .todo-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .todo-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .todo-button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .todo-button:hover {
+            background-color: #2980b9;
+        }
+
+        .todo-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .todo-item:hover {
+            background-color: #f1f3f5;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            color: #c0392b;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="todo-header">
+            <h1> Todo List</h1>
+        </header>
+
+        <form class="todo-form" id="todoForm">
+            <input type="text" 
+                   class="todo-input" 
+                   id="todoInput"
+                   placeholder="Enter new task..."
+                   aria-label="Task input"
+                   required>
+            <button type="submit" class="todo-button">Add Task</button>
+        </form>
+
+        <ul class="todo-list" id="todoList" aria-live="polite"></ul>
+    </div>
+
+    <script>
+        (() => {
+            'use strict';
+            
+            const form = document.getElementById('todoForm');
+            const input = document.getElementById('todoInput');
+            const list = document.getElementById('todoList');
+            
+            class TodoList {
+                constructor() {
+                    form.addEventListener('submit', this.addTask.bind(this));
+                    list.addEventListener('click', this.handleListClick.bind(this));
+                }
+
+                createTaskElement(text) {
+                    const li = document.createElement('li');
+                    li.className = 'todo-item';
+                    li.innerHTML = `
+                        <span>${this.escapeHTML(text)}</span>
+                        <button class="remove-btn" aria-label="Remove task">×</button>
+                    `;
+                    return li;
+                }
+
+                addTask(e) {
+                    e.preventDefault();
+                    const text = input.value.trim();
+                    
+                    if (!text) return;
+                    
+                    const task = this.createTaskElement(text);
+                    list.appendChild(task);
+                    input.value = '';
+                    input.focus();
+                }
+
+                handleListClick(e) {
+                    if (e.target.classList.contains('remove-btn')) {
+                        e.target.closest('.todo-item').remove();
+                    }
+                }
+
+                escapeHTML(text) {
+                    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                }
+            }
+
+            // Initialize todo list
+            new TodoList();
+        })();
+    </script>
+</body>
+</html>
